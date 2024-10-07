@@ -23,7 +23,7 @@ const spawnChildProcess = async (args) => {
         console.error(`Error: ${data}`);
     });
 
-    // Закрываем дочерний процесс при завершении
+    // Закрываем дочерний процесс при завершени
     child.on('exit', (code) => {
         console.log(`Child process exited with code ${code}`);
     });
