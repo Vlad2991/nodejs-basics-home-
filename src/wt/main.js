@@ -3,7 +3,7 @@ import os from 'os';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
-// Получаем количество логических ядер CPU
+
 const numCores = os.cpus().length;
 
 // Получаем путь к файлу worker.js
