@@ -1,12 +1,8 @@
-const args = process.argv.slice(2);
+const args = process.argv.slice(2); // Получаем аргументы из командной строки
 
-console.log(`Total number of arguments is ${args.length}`);
-console.log(`Arguments: ${JSON.stringify(args)}`);
+console.log(`Received arguments: ${args.join(', ')}`);
 
-const echoInput = (chunk) => {
-    const chunkStringified = chunk.toString();
-    if (chunkStringified.includes('CLOSE')) process.exit(0);
-    process.stdout.write(`Received from master process: ${chunk.toString()}\n`)
-};
-
-process.stdin.on('data', echoInput);
+// Чтение из stdin (для примера)
+process.stdin.on('data', (data) => {
+    console.log(`Received from stdin: ${data.toString()}`);
+});

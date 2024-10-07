@@ -1,41 +1,37 @@
 import { promises as fs } from 'fs';
-import path from 'path';
+import { join } from 'path';
+import { ERROR_MSG, SUCCESS_MSG, __DIR } from './constants.js'; // Импортируем из constants.js
 
-// Получаем директорию, где находится данный скрипт
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const copyFiles = async () => {
+    const sourceDir = join(__DIR, 'files');
+    const targetDir = join(__DIR, 'files_copy');
 
-const copy = async () => {
     try {
-        const sourceDir = path.join(__dirname, 'files'); // Используем __dirname
-        const destDir = path.join(__dirname, 'files_copy'); // Используем __dirname
+        await fs.access(sourceDir);
 
-        console.log('Current working directory:', process.cwd());
-        console.log('Source directory path:', sourceDir);
-        console.log('Destination directory path:', destDir);
-
-        const sourceExists = await fs.stat(sourceDir).catch(() => false);
-        if (!sourceExists) {
-            throw new Error('FS operation failed: source directory "files" does not exist.');
+        try {
+            await fs.access(targetDir);
+            throw new Error(ERROR_MSG);
+        } catch (error) {
+            if (error.code !== 'ENOENT') {
+                throw new Error(ERROR_MSG);
+            }
         }
 
-        const destExists = await fs.stat(destDir).catch(() => false);
-        if (destExists) {
-            throw new Error('FS operation failed: destination directory "files_copy" already exists.');
-        }
-
-        await fs.mkdir(destDir);
+        await fs.mkdir(targetDir);
 
         const files = await fs.readdir(sourceDir);
-        for (const file of files) {
-            const sourceFile = path.join(sourceDir, file);
-            const destFile = path.join(destDir, file);
-            await fs.copyFile(sourceFile, destFile);
-        }
 
-        console.log('Files copied successfully!');
+        await Promise.all(files.map(async (file) => {
+            const sourcePath = join(sourceDir, file);
+            const destPath = join(targetDir, file);
+            await fs.copyFile(sourcePath, destPath);
+        }));
+
+        console.log(SUCCESS_MSG);
     } catch (error) {
-        console.error(`Error: ${error.message}`);
+        console.error(`${ERROR_MSG}: ${error.message}`);
     }
 };
 
-copy();
+await copyFiles();
